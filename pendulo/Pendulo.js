@@ -12,7 +12,10 @@ function inicializar(){
 		CTX.ctx.translate(CTX.W2, CTX.H2);
 		
 		limpiar();
-		pendulo = new Pendulo(0, 0, 100, 0.6);
+		
+		anguloMeta = leerAngulo();
+		pendulo = new Pendulo(0, 0, 150, anguloMeta);
+		
 		setInterval(animar, 25);
 }
 
@@ -26,7 +29,12 @@ function mostrar(s){
 }
 
 function reiniciar(){
-    pendulo = new Pendulo(0, 0, 100, 0.6);
+    anguloMeta = leerAngulo();
+    pendulo = new Pendulo(0, 0, 150, anguloMeta);
+}
+
+function alcanzar(){
+    anguloMeta = leerAngulo();
 }
 
 function animar(){
@@ -35,12 +43,37 @@ function animar(){
 	pendulo.mover();
 }
 
+function rad2grad(rad){
+    return rad*180/Math.PI;
+}
+
+function grad2rad(grad){
+    return grad*Math.PI/180;
+}
+
+function mod(n, m){
+        return (n%m + m)%m;
+}
+
+function leerAngulo(){
+    ang = mod($('angulo').value, 360);
+    $('angulo').value = ang;
+    return grad2rad(ang);
+}
+
+function $(id){
+    return document.getElementById(id);
+}
+
 /*
  * Objeto que representa un pendulo en el plano
  */
 function Pendulo(x, y, L, ang0){
 	
+	//punto (0,0) del sistema
 	this.O = new P2(x, y);
+	
+	//variables de estado
 	this.Q = new P2(ang0, 0);
 	this.L = L;
 	this.X = new P2(this.L*Math.sin(ang0),-this.L*Math.cos(ang0));//this.ang2xy(this.Q.x);
@@ -58,7 +91,7 @@ function Pendulo(x, y, L, ang0){
 			//this.X = this.ang2xy(this.Q.x);
 			ctx.save();
 				ctx.rotate(this.Q.x - Math.PI/2);
-				this.barra(100, 10, ctx);
+				this.barra(this.L, 6, ctx);
 			ctx.restore();
 		};
 	this.modelo = 
